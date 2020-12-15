@@ -16,9 +16,10 @@ def q_learning(env,
     
     for i in range(1, n_episodes + 1):
         if not i % logging_freq:
-            print(i)
             pi = compute_policy(Q)
-            rewards.append(estimate_return(env, pi, n_episodes=estimate_episodes))
+            cur_reward = estimate_return(env, pi, n_episodes=estimate_episodes)
+            rewards.append(cur_reward)
+            print(i, cur_reward)
             
         env.reset()
         done = False
@@ -58,10 +59,10 @@ def q_learning(env,
                     break
                 
                 if a_int is not None:
+                    # not out first move
                     Q[s][a_int] += alpha * (r + gamma * max(Q[s_prime[0]]) - Q[s][a_int])
 
                 # naughts: our move
-                #s = env.getHash()
                 a = sample_action(env, Q, eps)
                 a_int = env.int_from_action(a)
                 s_prime, r, done, _ = env.step(a)
@@ -73,6 +74,4 @@ def q_learning(env,
 
                 s = env.getHash()
             
-                
-
     return Q, rewards
